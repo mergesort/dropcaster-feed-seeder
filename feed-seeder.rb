@@ -1,6 +1,6 @@
 # Sample usage
 # cd to book folder
-# ruby ~/feed-seeder.rb && dropcaster > index.rss && aws s3 sync . "s3://audiobooks-rss/My Book Name" --acl public-read
+# ruby feed-seeder.rb && dropcaster > index.rss && aws s3 sync . "s3://audiobooks-rss/My Book Name" --acl public-read
 
 require 'colorize'
 require 'optparse'
