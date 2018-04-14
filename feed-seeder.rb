@@ -52,13 +52,13 @@ def format_title(title, separator)
 	return formatted_title = title.gsub(/\b('?[a-z])/) { $1.capitalize }.split(" ").join(separator)
 end
 
-def generate_url(title, suffix)
+def generate_url(title, file_format, suffix)
   domain = "https://s3.amazonaws.com"
   bucket = "audiobooks-rss"
 
  	formatted_title = format_title(title, "+")
   folder = formatted_title
-  path = formatted_title + "-" + "#{suffix}.mp3"
+  path = file_format + "-" + "#{suffix}.mp3"
 
 	return "#{domain}/#{bucket}/#{folder}/#{path}"
 end
@@ -108,6 +108,9 @@ def run_loop
 	puts "Enter a title:".green
 	title = STDIN.gets.chomp
 
+	puts "Enter file format (optional):".blue
+	file_format = STDIN.gets.chomp
+
 	puts "Enter a suffix:".green
 	suffix = STDIN.gets.chomp
 
@@ -117,7 +120,13 @@ def run_loop
 	image_url = arguments[:image_url]
 	path = arguments[:path]
 	formatted_title = format_title(title, " ")
-	url = generate_url(title, suffix)
+
+	# If the user skips specifying a file format, use the formatted_title instead
+	if file_format.length == 0
+		file_format = formatted_title
+	end
+
+	url = generate_url(title, file_format, suffix)
 
 	channel_yml = generate_template(formatted_title, url, image_url, description)
 	write_to_file("#{path}/channel.yml", channel_yml)
