@@ -105,14 +105,18 @@ end
 # Run app
 
 def run_loop
-	puts "Enter a title:".green
-	title = STDIN.gets.chomp
+	begin
+		puts "Enter a title:".green
+	  title = STDIN.gets.chomp
+	end while title.to_s.empty?
 
 	puts "Enter file format (optional):".blue
 	file_format = STDIN.gets.chomp
 
-	puts "Enter a suffix:".green
-	suffix = STDIN.gets.chomp
+	begin
+		puts "Enter a suffix:".green
+		suffix = STDIN.gets.chomp
+	end while suffix.to_s.empty?
 
 	arguments = read_arguments
 
@@ -122,7 +126,7 @@ def run_loop
 	formatted_title = format_title(title, " ")
 
 	# If the user skips specifying a file format, use the formatted_title instead
-	if file_format.length == 0
+	if file_format.to_s.empty?
 		file_format = formatted_title
 	end
 
