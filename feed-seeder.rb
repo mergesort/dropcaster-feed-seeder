@@ -5,31 +5,27 @@
 require 'colorize'
 require 'optparse'
 
-def default_path
-	return "."
-end
+DEFAULT_PATH = "."
 
 def write_to_file(path, string)
 	File.write(path, string)
 end
 
 def read_arguments
-	arguments = {}
+	arguments = {
+		path: DEFAULT_PATH,
+    description: "Books are cool",
+    image_url: "https://pbs.twimg.com/profile_images/378800000448533787/c32fb13e160ee7cd17848e8cacbbcfc5_400x400.jpeg",
+	}
 
 	OptionParser.new do |opts|
 	  opts.banner = "Usage: example.rb [options]"
 
-	  opts.on("-d", "--description DESCRIPTION", "An optional description for the book") do |n|
-	    arguments[:description] = n
-	  end
+	  opts.on("-d", "--description DESCRIPTION", "An optional description for the book")  { |n| arguments[:description] = n }
 
-	  opts.on("-i", "--image IMAGE", "An optional image url for the book") do |n|
-	    arguments[:image_url] = n
-	  end
+	  opts.on("-i", "--image IMAGE", "An optional image url for the book") { |n| arguments[:image_url] = n }
 
-	  opts.on("-p", "--path PATH", "The path of the folder to create a feed of") do |n|
-	    arguments[:path] = n
-	  end
+    opts.on("-p", "--path PATH", "The path of the folder to create a feed of")         { |n| args[:path] = n }
 
 	  opts.on("-h", "--help", "Prints this help") do
 	    puts opts
@@ -37,19 +33,13 @@ def read_arguments
 	  end
 	end.parse!
 
-	default_description = "Books are cool"
-	arguments[:description] ||= default_description
-
-	arguments[:path] ||= default_path
-
-	default_image_url = "https://pbs.twimg.com/profile_images/378800000448533787/c32fb13e160ee7cd17848e8cacbbcfc5_400x400.jpeg"
-	arguments[:image_url] ||= default_image_url
-
-	return arguments
+	arguments
 end
 
 def format_title(title, separator)
-	return formatted_title = title.gsub(/\b('?[a-z])/) { $1.capitalize }.split(" ").join(separator)
+	title.gsub(/\b('?[a-z])/) { $1.capitalize }
+		.split(" ")
+		.join(separator)
 end
 
 def generate_url(title, file_format, suffix)
@@ -58,9 +48,9 @@ def generate_url(title, file_format, suffix)
 
  	formatted_title = format_title(title, "+")
   folder = formatted_title
-  path = file_format + "-" + "#{suffix}.mp3"
+  path = "#{formatted_title}-#{suffix}.mp3"
 
-	return "#{domain}/#{bucket}/#{folder}/#{path}"
+  [domain, bucket, folder, path].join("/")
 end
 
 def generate_template(title, file_url, image_url, description)
@@ -104,7 +94,7 @@ end
 
 # Run app
 
-def run_loop
+def start
 	begin
 		puts "Enter a title:".green
 	  title = STDIN.gets.chomp
@@ -136,4 +126,4 @@ def run_loop
 	write_to_file("#{path}/channel.yml", channel_yml)
 end
 
-run_loop
+start
